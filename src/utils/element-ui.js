@@ -18,7 +18,9 @@ import {
   badge,
   Table,
   TableColumn,
-  Pagination
+  Pagination,
+  Collapse,
+  CollapseItem
 } from 'element-ui'
 Vue.use(Button)
 Vue.use(Select)
@@ -39,6 +41,8 @@ Vue.use(badge)
 Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(Pagination)
+Vue.use(Collapse)
+Vue.use(CollapseItem)
 Vue.prototype.$msgbox = MessageBox
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$prompt = MessageBox.prompt

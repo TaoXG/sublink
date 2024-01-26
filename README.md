@@ -1,7 +1,6 @@
 # 更新说明：
-更换uwsgi服务器组件为gunicorn
-
-修复nekobox导入的协议带/出错
+支持surge,以及规则编辑
+增加编辑和新增节点功能
 
 # 功能说明：
 ![Alt Text](readme/1.png)
@@ -13,9 +12,9 @@
 
 解决安全问题预防被偷节点,集成前后端
 
-目前支持v2ray通用的格式和clash格式
+目前支持v2ray|clash|surge
 
-v2ray格式通用的软件已测有下:v2rayn 小火箭 圈x等，还有一些没用过不知名
+v2ray格式通用的软件已测有下:v2rayn 小火箭等，还有一些没用过不知名
 
 默认账户密码都是admin，请记得修改否则被扫端口容易泄漏
 
@@ -76,20 +75,11 @@ docker run --name sublink -p 8000:5000 \
 -e PORT=5000 \
 -d jaaksi/sublink 
 ```
+# 假如你忘记了账号或者密码
 
-# clash配置说明：
+初始化为admin，确保你的容器在运行的时候终端执行以下命令：
 
-目前适配了vless,vmess,ssr,ss,trojan,hysteria,hy2协议
-
-如果发现连接无效问题请找我反馈
-
-# clash规则说明：
-
-我提供了一个默认带分流规则，提供了策略组变量：auto
-
-在proxy-groups下面的proxies写上auto可自动获取节点名称
-
-如果你不明白这是什么意思你就不用动默认规则
+    docker exec -it sublink bash -c "python init_user_pw.py; exit"
 
 本人电报联系：@toutie_1
 

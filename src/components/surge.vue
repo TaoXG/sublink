@@ -1,15 +1,14 @@
 <template>
 <div>
   <el-button @click="clash_config('edit')"> 编辑规则</el-button>
-  <el-tag style="margin-left: 10px" size="mini" type="info">适配:ss ssr vmess vless trojan hy hy2</el-tag>
+  <el-tag style="margin-left: 10px" size="mini" type="info">适配:ss vmess trojan</el-tag>
   <el-dialog
-    title="clash规则编辑(所有订阅共用一个规则)"
+    title="surge规则编辑(所有订阅共用一个规则)"
     :visible.sync="dialogVisible"
     width="80%"
   >
     <span>建议复制出来修改后在替换上去，这里修改内容会有卡顿</span>
-    <p>proxies节点字段会自己生成无需填写</p>
-    <p>proxy-groups下的proxies下里面写上auto会插入本订阅所有节点名称列表</p>
+    <p>[Proxy Group]下里面写上auto会插入本订阅所有节点名称列表</p>
     <div style="margin-bottom: 10px"></div>
     <span>
       <el-input
@@ -27,9 +26,9 @@
 </template>
 
 <script>
-import { GetClash } from '@/api/nodetype'
+import { GetSurge } from '@/api/nodetype'
 export default {
-  name: 'MyClash',
+  name: 'MySurge',
   data () {
     return {
       dialogVisible: false,
@@ -43,7 +42,7 @@ export default {
     async clash_config (index) {
       // console.log(index)
       if (index === 'edit') {
-        const { code, msg } = await GetClash({
+        const { code, msg } = await GetSurge({
           index: 'read'
         })
         this.dialogVisible = true
@@ -58,7 +57,7 @@ export default {
       }
       if (index === 'save') {
         // console.log('sava')
-        const { code, msg } = await GetClash({
+        const { code, msg } = await GetSurge({
           index: 'save',
           text: this.config
         })

@@ -19,7 +19,6 @@
   <el-dialog
     title="新订阅名称"
     :visible.sync="dialogVisible"
-    width="30%"
     >
     <el-input
       v-model.trim="rename"

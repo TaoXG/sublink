@@ -29,29 +29,47 @@
               </el-select>
 
               <rename @handleRename="handleRename" @handleDel="handleDel"></rename>
-
+              <!--    新增节点按钮-->
+              <div v-if="optionSub!==''">
+                <Createnode :optionValue="optionValue" @RefreshSub="RefreshSub"></Createnode>
+              </div>
             </div>
             <div style="margin-bottom: 10px"></div>
-            <Nodelist :list="this.NodeList" v-if="optionSub!==''" @DelSubNode="DelSubNode" @CopySubNode="CopySubNode"></Nodelist>
+            <Nodelist :list="this.NodeList" v-if="optionSub!==''" @RefreshSub="RefreshSub" @CopySubNode="CopySubNode"></Nodelist>
             <div style="margin-bottom: 10px"></div>
             <div v-if="optionValue!=''">
 <!--            <el-tag type="info" style="margin-right: 10px">-->
 <!--              上面为列表区域-->
 <!--            </el-tag>-->
-            <el-tag type="success">
-              下面为编辑区域(批量添加删除)
-            </el-tag>
+              <el-collapse accordion>
+                <el-collapse-item>
+                  <template slot="title">
+                    <el-tag type="success">
+                      展开批量编辑区域(批量添加删除)
+                    </el-tag>
+                  </template>
+                  <div style="margin-bottom: 10px"></div>
+                  <el-input
+                    type="textarea"
+                    placeholder="节点多个用回车分开,每个节点最后面带上|为备注信息"
+                    v-model="optionSub"
+                    rows="10"
+                    show-word-limit
+                  />
+                  <div style="margin-bottom: 10px"></div>
+                  <el-button
+                    round
+                    @click="handleSet"
+                    style="position: relative;left: 50%;transform: translate(-50%)"
+                  >修改订阅
+                  </el-button>
+                </el-collapse-item>
+              </el-collapse>
+
             </div>
+
             <div style="margin-bottom: 10px"></div>
-            <el-input
-              type="textarea"
-              placeholder="节点多个用回车分开,每个节点最后面带上|为备注信息"
-              v-model="optionSub"
-              rows="10"
-              show-word-limit
-            />
-            <div style="margin-bottom: 10px"></div>
-            <div style="display: flex">
+            <div style="display: flex" v-if="optionSub!==''">
             <el-tag style="margin-right: 10px">生成类型</el-tag>
             <el-select v-model="EDIT.value" placeholder="生成类型" @change="handleUrl('edit')">
               <el-option
@@ -62,9 +80,10 @@
               </el-option>
             </el-select>
             <MyClash v-if="EDIT.value==='clash'" style="margin-left: 10px"></MyClash>
+              <MySurge v-if="EDIT.value==='surge'" style="margin-left: 10px"></MySurge>
             </div>
             <div style="margin-bottom: 10px"></div>
-
+          <div v-if="optionSub!==''">
             <el-input
               type="text"
               v-model="optionUrl"
@@ -78,13 +97,7 @@
                 </el-button>
               </template>
             </el-input>
-            <div style="margin-bottom: 10px"></div>
-            <el-button
-              round
-              style="position: relative;left: 50%;transform: translate(-50%)"
-              @click="handleSet"
-            >修改订阅
-            </el-button>
+            </div>
           </div>
           <!--          创建订阅-->
           <div v-else>
@@ -140,9 +153,11 @@
 import { GetSubs, CreateSub, DelSub, SetSub, DecodeSub, RenameSub } from '@/api/sub'
 import USER from '@/components/user'
 import MyClash from '@/components/clash'
+import MySurge from '@/components/surge'
 import MyAddress from '@/components/address'
 import Nodelist from '@/components/nodelist'
 import Rename from '@/components/rename'
+import Createnode from '@/components/createnode'
 import VueQr from 'vue-qr'
 export default {
   name: 'MyIndex',
@@ -162,7 +177,7 @@ export default {
       timer: null,
       EDIT: {
         value: 'clash',
-        option: ['v2ray', 'clash']
+        option: ['v2ray', 'clash', 'surge']
       },
       isQrShow: false,
       QrTest: '',
@@ -329,7 +344,7 @@ export default {
     CopySubNode (text) {
       this.handleCopy(text)
     },
-    DelSubNode () {
+    RefreshSub () {
       this.GetSubs()
     },
     async handleRename (rename) {
@@ -353,9 +368,11 @@ export default {
   components: {
     USER,
     MyClash,
+    MySurge,
     MyAddress,
     Nodelist,
     Rename,
+    Createnode,
     VueQr
   }
 }

@@ -1,4 +1,5 @@
 <template>
+  <div>
   <el-table
     :data="list"
     border
@@ -24,21 +25,51 @@
     </el-table-column>
     <el-table-column
       label="操作"
-      width="100">
+      >
       <template slot-scope="scope">
+        <el-button @click="handleEditPop(scope.row)" type="text" size="small">编辑</el-button>
         <el-button @click="handleCopy(scope.row)" type="text" size="small">复制</el-button>
         <el-button @click="handleDel(scope.row)" type="text" size="small">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
+  <el-dialog
+    title="单个节点编辑"
+    :visible.sync="dialogVisible"
+  >
+    <el-input
+      v-model.trim="Edit.node"
+      type="textarea"
+      rows="10"
+      placeholder="节点"
+    />
+    <div style="margin-bottom: 10px"></div>
+
+    <el-input
+      v-model.trim="Edit.remarks"
+      placeholder="备注"
+      @keyup.enter.native="handleEdit"
+    />
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleEdit">确 定</el-button>
+  </span>
+  </el-dialog>
+  </div>
 </template>
 
 <script>
-import { DelSubNode } from '@/api/sub'
+import { DelSubNode, SetNode } from '@/api/sub'
 export default {
   name: 'NodeList',
   data () {
     return {
+      dialogVisible: false,
+      Edit: {
+        id: 0,
+        remarks: '',
+        node: ''
+      }
     }
   },
   props: {
@@ -61,7 +92,7 @@ export default {
       }).then(async () => {
         const { code, msg } = await DelSubNode(id)
         if (code === 200) {
-          this.$emit('DelSubNode', id)
+          this.$emit('RefreshSub')
         }
         this.$message({
           type: code === 200 ? 'success' : 'warning',
@@ -69,6 +100,28 @@ export default {
         })
       }).catch(() => {
 
+      })
+    },
+    handleEditPop ({ id, node, remarks }) {
+      this.Edit.id = id
+      this.Edit.node = node
+      this.Edit.remarks = remarks
+      this.dialogVisible = true
+    },
+    async handleEdit () {
+      const { code, msg } = await SetNode({
+        id: this.Edit.id,
+        node: this.Edit.node.trim(),
+        remarks: this.Edit.remarks.trim()
+      })
+      if (code === 200) {
+        // console.log(code, msg)
+        this.$emit('RefreshSub')
+        this.dialogVisible = false
+      }
+      this.$message({
+        type: code === 200 ? 'success' : 'warning',
+        message: msg
       })
     }
 
