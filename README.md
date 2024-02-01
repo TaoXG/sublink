@@ -64,7 +64,7 @@ docker run --name sublink -p 8000:5000 \
 
 那么ip加8000端口即可访问
 
-### 持久化启动docker方式二[挂载到本机]
+### 持久化启动docker方式二[挂载到指定目录]
 
 /www/sublink_data >> 本机目录
 
