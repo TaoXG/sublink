@@ -28,7 +28,12 @@ const SetRefresh = async () => { // 刷新token
       return response.data
     }
   } catch (error) {
-    console.error('刷新令牌请求失败', error)
+    if (error.response.status === 400 || error.response.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('refresh')
+      location.reload()
+    }
+    // console.error('刷新令牌请求失败', error)
     throw error // 抛出异常，由调用方处理
   }
 }
@@ -66,7 +71,7 @@ instance.interceptors.response.use(function (response) {
 }, function (error) {
   // 超出 2xx 范围的状态码都会触发该函数。
   // 对响应错误做点什么
-  if (error.request.status === 400 || error.request.status === 401) {
+  if (error.response.status === 400 || error.response.status === 401) {
     localStorage.removeItem('token')
     localStorage.removeItem('refresh')
     location.reload()

@@ -1,7 +1,8 @@
 # 更新说明：
-支持surge,以及规则编辑
-增加编辑和新增节点功能
-
+修复ss协议密码带@无法识别
+修复新增节点bug
+修复14天刷新令牌到期不注销问题
+新增hy2 obfs参数 以及hysteria2和hy2两个开头都可以
 # 功能说明：
 ![Alt Text](readme/1.png)
 ![Alt Text](readme/2.png)

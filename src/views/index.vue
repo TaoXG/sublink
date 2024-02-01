@@ -31,7 +31,39 @@
               <rename @handleRename="handleRename" @handleDel="handleDel"></rename>
               <!--    新增节点按钮-->
               <div v-if="optionSub!==''">
-                <Createnode :optionValue="optionValue" @RefreshSub="RefreshSub"></Createnode>
+                <el-button
+                  @click="NewNode.dialogVisible=true"
+                  round
+                  type="primary"
+                  size="mini"
+                >新增节点</el-button>
+                <el-dialog
+                  title="新增一个节点"
+                  :visible.sync="NewNode.dialogVisible"
+                >
+                  <el-input
+                    v-model.trim="NewNode.node"
+                    type="textarea"
+                    rows="10"
+                    placeholder="节点"
+                  />
+                  <div style="margin-bottom: 10px"></div>
+
+                  <el-input
+                    v-model.trim="NewNode.remarks"
+                    placeholder="备注"
+                    @keyup.enter.native="handleNewNode" />
+                  <span slot="footer" class="dialog-footer">
+    <el-button @click="NewNode.dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="handleNewNode">确 定</el-button>
+  </span>
+                </el-dialog>
+<!--                <Createnode>-->
+<!--                  <template v-slot:body>-->
+<!--                -->
+
+<!--                  </template>-->
+<!--                </Createnode>-->
               </div>
             </div>
             <div style="margin-bottom: 10px"></div>
@@ -150,14 +182,13 @@
 </template>
 
 <script>
-import { GetSubs, CreateSub, DelSub, SetSub, DecodeSub, RenameSub } from '@/api/sub'
+import { GetSubs, CreateSub, DelSub, SetSub, DecodeSub, RenameSub, CreateNode } from '@/api/sub'
 import USER from '@/components/user'
 import MyClash from '@/components/clash'
 import MySurge from '@/components/surge'
 import MyAddress from '@/components/address'
 import Nodelist from '@/components/nodelist'
 import Rename from '@/components/rename'
-import Createnode from '@/components/createnode'
 import VueQr from 'vue-qr'
 export default {
   name: 'MyIndex',
@@ -182,7 +213,12 @@ export default {
       isQrShow: false,
       QrTest: '',
       ver: process.env.VUE_APP_VER,
-      NodeList: []
+      NodeList: [],
+      NewNode: {
+        dialogVisible: false,
+        remarks: '',
+        node: ''
+      }
     }
   },
   created () {
@@ -363,7 +399,26 @@ export default {
           this.optionValue = rename // 更新当前下拉标题
         }
       }
+    },
+    async handleNewNode () {
+      const { code, msg } = await CreateNode({
+        name: this.optionValue,
+        node: this.NewNode.node.trim(),
+        remarks: this.NewNode.remarks.trim()
+      })
+      if (code === 200) {
+        // console.log(code, msg)
+        this.GetSubs()
+        this.NewNode.dialogVisible = false
+        this.NewNode.node = ''
+        this.NewNode.remarks = ''
+      }
+      this.$message({
+        type: code === 200 ? 'success' : 'warning',
+        message: msg
+      })
     }
+
   },
   components: {
     USER,
@@ -372,7 +427,6 @@ export default {
     MyAddress,
     Nodelist,
     Rename,
-    Createnode,
     VueQr
   }
 }
