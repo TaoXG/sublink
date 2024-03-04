@@ -16,6 +16,7 @@
           <span slot="label" class="el-icon-umbrella"> 订阅管理</span>
           <el-radio v-model="radio1" label="1" border v-if="optionList.length!==0">编辑订阅</el-radio>
           <el-radio v-model="radio1" label="2" border>创建订阅</el-radio>
+          <el-radio v-model="radio1" label="3" border>订阅解析</el-radio>
           <div style="margin-bottom: 10px"></div>
           <!--        编辑订阅-->
           <div v-if="radio1==='1'">
@@ -58,12 +59,6 @@
     <el-button type="primary" @click="handleNewNode">确 定</el-button>
   </span>
                 </el-dialog>
-<!--                <Createnode>-->
-<!--                  <template v-slot:body>-->
-<!--                -->
-
-<!--                  </template>-->
-<!--                </Createnode>-->
               </div>
             </div>
             <div style="margin-bottom: 10px"></div>
@@ -132,7 +127,7 @@
             </div>
           </div>
           <!--          创建订阅-->
-          <div v-else>
+          <div v-if="radio1==='2'">
             <el-input
               type="text"
               placeholder="订阅名称(支持emoji)"
@@ -155,8 +150,11 @@
             >创建订阅
             </el-button>
           </div>
-
+          <div v-if="radio1==='3'">
+            <MyParser></MyParser>
+          </div>
         </el-tab-pane>
+
         <el-tab-pane>
           <span slot="label"><i class="el-icon-user-solid"> 账号设置</i></span>
           <USER></USER>
@@ -182,13 +180,14 @@
 </template>
 
 <script>
-import { GetSubs, CreateSub, DelSub, SetSub, DecodeSub, RenameSub, CreateNode } from '@/api/sub'
+import { GetSubs, CreateSub, DelSub, SetSub, RenameSub, CreateNode } from '@/api/sub'
 import USER from '@/components/user'
 import MyClash from '@/components/clash'
 import MySurge from '@/components/surge'
 import MyAddress from '@/components/address'
 import Nodelist from '@/components/nodelist'
 import Rename from '@/components/rename'
+import MyParser from '@/components/parser'
 import VueQr from 'vue-qr'
 export default {
   name: 'MyIndex',
@@ -254,7 +253,7 @@ export default {
     },
     async handleCreate () {
       if (this.sub === '' || this.name === '') return false
-      await this.isSubAddress('create')
+      // await this.isSubAddress('create')
       clearTimeout(this.timer)
       this.timer = setTimeout(async () => {
         this.sublist = this.sub.split('\n')
@@ -277,9 +276,9 @@ export default {
     },
     async handleSet () { // 编辑订阅
       if (this.optionSub === '') return false
-      await this.isSubAddress('edit')
+      // await this.isSubAddress('edit')
       const res = this.list.find(item => item.name === this.optionValue)
-      // console.log(res, res.node)
+      console.log(res, res.node)
       const list = this.optionSub.split('\n')
       const { code, msg } = await SetSub({
         name: this.optionValue.trim(),
@@ -345,38 +344,37 @@ export default {
         this.optionUrl = location.origin + `/sub/${this.EDIT.value}/${base64Value}`
       }
     },
-    async isSubAddress (index) { // 判断是否订阅地址
-      // 原始字符串
-      let str
-      if (index === 'create') {
-        str = this.sub
-      } else {
-        str = this.optionSub
-      }
-      // 使用正则表达式匹配HTTP和HTTPS网址
-      const regex = /(http|https):\/\/[^\s]+/g
-      const matches = str.match(regex)
-      // 输出匹配的网址
-      // console.log(matches)
-      if (matches === null) return false
-      const { code, msg } = await DecodeSub({ urls: matches })
-      if (code === 200) {
-        // 替换匹配的网址
-        const list = msg
-        if (index === 'create') {
-          for (let i = 0; i <= (list.length - 1); i++) {
-            this.sub = this.sub.replace(matches[i], msg[i])
-          }
-        } else {
-          for (let i = 0; i <= (list.length - 1); i++) {
-            this.optionSub = this.optionSub.replace(matches[i], msg[i] + ' ')
-          }
-        }
-      }
-      if (code === 400) {
-        alert(msg)
-      }
-    },
+    // async isSubAddress (index) { // 判断是否订阅地址
+    //   let str
+    //   if (index === 'create') {
+    //     str = this.sub
+    //   } else {
+    //     str = this.optionSub
+    //   }
+    //   // 使用正则表达式匹配HTTP和HTTPS网址
+    //   const regex = /(http|https):\/\/[^\s]+/g
+    //   const matches = str.match(regex)
+    //   // 输出匹配的网址
+    //   // console.log(matches)
+    //   if (matches === null) return false
+    //   const { code, msg } = await DecodeSub({ urls: matches })
+    //   if (code === 200) {
+    //     // 替换匹配的网址
+    //     const list = msg
+    //     if (index === 'create') {
+    //       for (let i = 0; i <= (list.length - 1); i++) {
+    //         this.sub = this.sub.replace(matches[i], msg[i])
+    //       }
+    //     } else {
+    //       for (let i = 0; i <= (list.length - 1); i++) {
+    //         this.optionSub = this.optionSub.replace(matches[i], msg[i] + ' ')
+    //       }
+    //     }
+    //   }
+    //   if (code === 400) {
+    //     alert(msg)
+    //   }
+    // },
     CopySubNode (text) {
       this.handleCopy(text)
     },
@@ -426,6 +424,7 @@ export default {
     MySurge,
     MyAddress,
     Nodelist,
+    MyParser,
     Rename,
     VueQr
   }
